@@ -1,0 +1,301 @@
+\documentclass[12pt,a4paper]{article}
+\input{preamble}
+
+\newcommand{\ReportLab}{2}
+\newcommand{\ReportStudent}{Федосеев Николай Владимирович}
+\newcommand{\ReportGroup}{М8О-204БВ-25}
+\newcommand{\ReportTeacher}{Н. А. Гапонов}
+\newcommand{\ReportDate}{8 октября 2026 г.}
+\newcommand{\ReportYear}{2026}
+\newcommand{\ReportCourse}{Операционные системы и архитектура компьютера}
+
+\begin{document}
+\input{titlepage}
+
+\section{Условие}
+\textbf{Цель работы:} создать дочерний процесс, запустить в нём отдельную программу и организовать передачу данных через канал.
+
+\textbf{Задание, вариант 1.} Пользователь вводит команды вида: «число число число<endline>». Далее эти числа передаются от родительского процесса в дочерний. Дочерний процесс считает их сумму и выводит её в файл. Числа имеют тип int. Количество чисел может быть произвольным.
+
+\section{Метод решения}
+Родительская программа \texttt{parent} получает имя выходного файла, создаёт неименованный канал с помощью \texttt{pipe} и дочерний процесс с помощью \texttt{fork}. Родитель закрывает конец канала для чтения, а дочерний процесс - конец для записи. Через оставшиеся дескрипторы родитель передаёт данные, а дочерний процесс принимает их.
+
+Дочерний процесс через \texttt{dup2} назначает конец канала своим стандартным вводом и вызывает \texttt{execl}. Этот вызов заменяет программу в существующем процессе на \texttt{child}; новый процесс при этом не создаётся. Имя выходного файла передаётся в \texttt{argv[1]}. Дескриптор стандартного ввода сохраняется при успешном запуске новой программы.
+
+Родитель читает команды через \texttt{getline} и передаёт их в канал функцией \texttt{write\_all}. Канал передаёт поток байтов, а не отдельные сообщения. Конец строки служит границей команды. В дочерней программе \texttt{getline} собирает строки из этого потока, \texttt{parse\_sum} разбирает числа, затем сумма записывается в файл.
+
+После EOF родитель закрывает конец канала для записи. Ребёнок дочитывает оставшиеся данные и получает EOF, когда в канале больше нет данных и все дескрипторы записи закрыты. Родитель ждёт завершения ребёнка через \texttt{waitpid} и проверяет его статус.
+
+\section{Описание программы}
+\subsection{Структура файлов}
+\begin{table}[H]
+\caption{Основные файлы проекта}
+\begin{tabularx}{\linewidth}{|P{4.6cm}|L|}
+\hline
+\thead{Файл} & \thead{Назначение} \\ \hline
+\texttt{src/parent.c} & Ввод, создание канала и процесса, запуск ребёнка, передача строк, ожидание результата. \\ \hline
+\texttt{src/child.c} & Разбор чисел, проверка суммы, запись выходного файла. \\ \hline
+\texttt{src/CMakeLists.txt} & Сборка двух программ в стандарте C17. \\ \hline
+\end{tabularx}
+\end{table}
+
+
+\subsection{Основные типы данных и функции}
+\texttt{int pipe\_fd[2]} хранит дескрипторы канала: индекс 0 соответствует чтению, индекс 1 записи. \texttt{pid\_t child\_pid} хранит PID дочернего процесса. \texttt{ssize\_t} используется для результата \texttt{getline} и \texttt{write}: успешный результат неотрицателен, ошибка обозначается значением $-1$. Длина и вместимость буфера хранятся в \texttt{size\_t}.
+
+Функция \texttt{write\_all(int fd, const char *data, size\_t size)} есть в обеих программах. Она записывает весь буфер, продолжает запись после частичного успеха и повторяет вызов при \texttt{EINTR}. Возвращает 0 при успехе и $-1$ при ошибке.
+
+\texttt{parse\_sum(const char *line, int *sum\_out)} последовательно разбирает десятичные числа через \texttt{strtol}. Возвращает 0 при успехе, $-1$ при некорректной или пустой строке, $-2$ при переполнении суммы. Результат записывается по указателю только после успешного разбора всей строки. Перед \texttt{strtol} сбрасывается \texttt{errno}; проверяются отсутствие числа, \texttt{ERANGE}, диапазон \texttt{int} и разделитель после числа.
+
+\texttt{getline} выделяет и увеличивает буфер по мере необходимости. Фиксированного ограничения на число элементов в строке в программе нет. Буферы освобождаются через \texttt{free}.
+
+\subsection{Системные вызовы}
+
+\begin{table}[H]
+\caption{Операции с процессами, каналом и файлом}
+\begin{tabularx}{\linewidth}{|P{4.6cm}|L|}
+\hline
+\thead{Функция в коде} & \thead{Назначение} \\ \hline
+\texttt{pipe} & Создаёт канал \\ \hline
+\texttt{fork} & Создаёт ребёнка \\ \hline
+\texttt{dup2} & Переназначает дескриптор 0 на конец канала для чтения \\ \hline
+\texttt{execl} & Запускает \texttt{child} в текущем процессе через \texttt{execve} \\ \hline
+\texttt{open} & Создаёт или очищает выходной файл \\ \hline
+\texttt{write} & Передаёт команды в канал и записывает суммы в файл \\ \hline
+\texttt{close} & Закрывает ненужные концы канала и выходной файл \\ \hline
+\texttt{waitpid} & Ждёт конкретного ребёнка и получает его статус \\ \hline
+\texttt{getpid}, \texttt{getppid} & Получают PID для диагностического вывода \\ \hline
+\texttt{signal} & Устанавливает игнорирование \texttt{SIGPIPE}, чтобы при закрытии канала дочерним процессом родитель мог обработать ошибку записи \texttt{EPIPE} \\ \hline
+\texttt{\_exit} & Завершает ребёнка при ошибке до успешного \texttt{exec} \\ \hline
+\end{tabularx}
+\end{table}
+
+\texttt{getline} и \texttt{fprintf} не являются системными вызовами, но в своей реализации libc вызывают \texttt{read} и \texttt{write}.
+
+Выходной файл открывается с флагами \texttt{O\_WRONLY | O\_CREAT | O\_TRUNC}. Если он существовал, старое содержимое удаляется. Для нового файла запрашиваются права \texttt{0644}. Программа не создаёт недостающие каталоги.
+
+\subsection{Ключевые фрагменты кода}
+После создания канала и \texttt{fork} ребёнок закрывает конец записи и перенаправляет стандартный ввод. Проверка равенства дескрипторов нужна, чтобы не закрыть дескриптор 0, если конец чтения уже оказался стандартным вводом.
+\begin{listingblock}{Перенаправление ввода и запуск child (parent.c)}
+\begin{code}
+if (pipe_fd[0] != STDIN_FILENO) {
+    if (dup2(pipe_fd[0], STDIN_FILENO) == -1) {
+        perror("dup2");
+        _exit(EXIT_FAILURE);
+    }
+    if (close(pipe_fd[0]) == -1) {
+        perror("close read end");
+        _exit(EXIT_FAILURE);
+    }
+}
+
+execl(CHILD_PATH, "child", filename, (char *) NULL);
+perror("execl");
+_exit(EXIT_FAILURE);
+\end{code}
+\end{listingblock}
+
+При успешном \texttt{execl} управление в этот код не возвращается. \texttt{perror} и \texttt{\_exit} выполняются только при ошибке. В отличие от \texttt{exit}, \texttt{\_exit} не сбрасывает унаследованные буферы stdio.
+
+Один \texttt{write} может записать только часть буфера. Следующая итерация передаёт оставшуюся часть; \texttt{EINTR} означает, что вызов нужно повторить.
+\begin{listingblock}{Полная запись буфера (parent.c, child.c)}
+\begin{code}
+while (written < size) {
+    ssize_t res = write(fd, data + written, size - written);
+    if (res > 0) {
+        written += (size_t) res;
+    } else if (res == 0) {
+        errno = EIO;
+        return -1;
+    } else if (errno != EINTR) {
+        return -1;
+    }
+}
+\end{code}
+\end{listingblock}
+
+Перед сложением проверяется, поместится ли результат в \texttt{int}. Само переполняющее сложение не выполняется.
+\begin{listingblock}{Проверка числа и суммы (child.c)}
+\begin{code}
+if (current == end || errno == ERANGE ||
+    value < INT_MIN || value > INT_MAX) return -1;
+if (*end != '\0' && !isspace((unsigned char)*end)) return -1;
+
+if ((value > 0 && sum > INT_MAX - value) ||
+    (value < 0 && sum < INT_MIN - value)) return -2;
+
+sum += (int) value;
+\end{code}
+\end{listingblock}
+
+После передачи команд родитель закрывает конец записи и ждёт ребёнка. Прерывание ожидания сигналом не считается завершением процесса, поэтому при \texttt{EINTR} ожидание повторяется.
+\begin{listingblock}{Ожидание дочернего процесса (parent.c)}
+\begin{code}
+do {
+    wait_result = waitpid(child_pid, &status, 0);
+} while (wait_result == -1 && errno == EINTR);
+\end{code}
+\end{listingblock}
+
+Далее \texttt{WIFEXITED} проверяет обычное завершение, а \texttt{WEXITSTATUS} извлекает код. \texttt{WIFSIGNALED} и \texttt{WTERMSIG} используются, если процесс завершён сигналом. Ненулевой код ребёнка или ошибка родителя приводит к \texttt{EXIT\_FAILURE} у родителя.
+
+\subsection{Обработка ошибок}
+Имя файла не должно быть пустым или содержать встроенный NUL. Такой же NUL проверяется в каждой команде до разбора чисел. Допустимы знаки чисел, пробелы и табуляция; дробные числа, буквы, слитные токены и пустые команды отклоняются.
+
+При ошибке дочерняя программа сообщает номер строки и прекращает обработку. Ранее записанные суммы остаются в файле. Родитель игнорирует \texttt{SIGPIPE}: если ребёнок закрыл канал, запись возвращает ошибку \texttt{EPIPE}, которую родитель может обработать перед \texttt{waitpid}.
+
+\section{Сборка и запуск}
+
+Используется CMake не ниже 3.21. Включены \texttt{-Wall -Wextra -Wpedantic}. Макрос \texttt{\_POSIX\_C\_SOURCE=200809L} открывает объявления POSIX-функций, включая \texttt{getline}, при строгом режиме C17.
+\begin{terminal}
+cmake -S src -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build --parallel
+./build/parent
+\end{terminal}
+
+CMake передаёт абсолютный путь к собранному \texttt{child} через макрос \texttt{CHILD\_PATH}.
+
+При запуске сначала вводится имя файла, затем команды. После последней строки нужно нажать Enter и Ctrl+D на пустой строке.
+
+\section{Демонстрация работы strace}
+Программа запущена из корня проекта командой:
+\begin{terminal}
+mkdir -p report/inc
+strace -f -yy -s 256 -o report/inc/strace.txt ./build/parent
+\end{terminal}
+
+Флаг \texttt{-f} включает отслеживание дочернего процесса, \texttt{-yy} подписывает дескрипторы, \texttt{-s 256} увеличивает лимит отображаемых символов, \texttt{-o} сохраняет вывод strace в указанный файл.
+
+Ввод при запуске:
+\begin{terminal}
+res.txt
+1 2 3
+3 4
+5
+\end{terminal}
+
+После последней строки ввод завершён через Ctrl+D. PID родителя --- 110201, PID ребёнка --- 110204. Полный вывод strace приведён в приложении Б. Номера строк ниже соответствуют этому файлу.
+
+В начале вывода видна загрузка библиотек. Основная работа программы начинается с чтения имени файла на строке 33. Пометки \texttt{unfinished} и \texttt{resumed} обозначают начало вызова и продолжение его записи в выводе strace. Части одного вызова сопоставляются по PID и имени вызова.
+
+\subsection{Создание канала и дочернего процесса}
+Строки 34 и 36:
+\begin{terminal}
+110201 pipe2([3<pipe:[4014953]>, 4<pipe:[4014953]>], 0) = 0
+110201 clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f9d26825a10) = 110204
+\end{terminal}
+
+\texttt{pipe2} создаёт канал с дескрипторами 3 для чтения и 4 для записи. Подпись \texttt{pipe:[4014953]} обозначает один и тот же канал. В коде используется \texttt{fork}, а в выводе strace виден \texttt{clone}; родитель получает PID созданного ребёнка 110204.
+
+После \texttt{fork} родитель закрывает свой конец чтения, а ребёнок свой конец записи. Строки 42--45:
+\begin{terminal}
+110201 close(3<pipe:[4014953]> <unfinished ...>
+110204 close(4<pipe:[4014953]> <unfinished ...>
+110201 <... close resumed>)             = 0
+110204 <... close resumed>)             = 0
+\end{terminal}
+
+У каждого процесса своя таблица дескрипторов. Поэтому закрытие дескриптора 3 у родителя не закрывает конец чтения у ребёнка.
+
+\subsection{Перенаправление ввода и запуск child}
+Родитель устанавливает игнорирование \texttt{SIGPIPE}. В строках 46 и 48 это видно как \texttt{rt\_sigaction} с \texttt{sa\_handler=SIG\_IGN}. В данном запуске ошибок записи в канал не было.
+
+Ребёнок перенаправляет стандартный ввод на канал и закрывает лишний дескриптор. Строки 47, 49, 51 и 53:
+\begin{terminal}
+110204 dup2(3<pipe:[4014953]>, 0</dev/pts/1<char 136:1>> <unfinished ...>
+110204 <... dup2 resumed>)              = 0<pipe:[4014953]>
+110204 close(3<pipe:[4014953]> <unfinished ...>
+110204 <... close resumed>)             = 0
+\end{terminal}
+
+После \texttt{dup2} дескриптор 0 ребёнка связан с каналом. Дескриптор 3 закрывается, но дескриптор 0 остаётся открытым.
+
+Строки 54 и 57:
+\begin{terminal}
+110204 execve("/home/nikallow/Code/1-mai/3-os/laba2/build/child", ["child", "res.txt"], 0x7fff1911f118 /* 87 vars */ <unfinished ...>
+110204 <... execve resumed>)            = 0
+\end{terminal}
+
+Вызов \texttt{execl} из кода выполняется через \texttt{execve}. В процессе 110204 запускается \texttt{child}; PID не меняется. Имя файла \texttt{res.txt} передано через \texttt{argv[1]}, стандартный ввод остаётся связан с каналом.
+
+\subsection{Открытие файла и передача команд}
+Строка 86:
+\begin{terminal}
+110204 openat(AT_FDCWD</home/nikallow/Code/1-mai/3-os/laba2>, "res.txt", O_WRONLY|O_CREAT|O_TRUNC, 0644) = 3</home/nikallow/Code/1-mai/3-os/laba2/res.txt>
+\end{terminal}
+
+Ребёнок открывает \texttt{res.txt} для записи с флагами создания и очистки файла. \texttt{open} из кода отображается в выводе strace как \texttt{openat}. Полученный дескриптор 3 теперь относится к выходному файлу.
+
+Первая команда прослеживается в строках 94--98:
+\begin{terminal}
+110201 <... read resumed>, "1 2 3\n", 1024) = 6
+110201 write(4<pipe:[4014953]>, "1 2 3\n", 6) = 6
+110204 <... read resumed>, "1 2 3\n", 4096) = 6
+110201 read(0</dev/pts/1<char 136:1>> <unfinished ...>
+110204 write(3</home/nikallow/Code/1-mai/3-os/laba2/res.txt>, "6\n", 2) = 2
+\end{terminal}
+
+На строке 94 родитель получает из терминала 6 байтов: \texttt{1 2 3} и перевод строки. На строке 95 он записывает эти байты в канал, на строке 96 ребёнок их читает. Вызов чтения ребёнка начался на строке 93. На строке 97 родитель уже ждёт следующую команду, а на строке 98 ребёнок записывает сумму 6 и перевод строки в файл.
+
+\texttt{getline} виден в выводе strace через вызовы \texttt{read}. Разбор чисел и сложение выполняются внутри процесса, поэтому отдельных системных вызовов для них нет. Для команд \texttt{3 4} и \texttt{5} ребёнок записывает суммы 7 и 5 на строках 104 и 110. В результате файл содержит:
+\begin{terminal}
+6
+7
+5
+\end{terminal}
+
+\subsection{EOF и завершение процессов}
+Строки 112--119:
+\begin{terminal}
+110201 <... read resumed>, "", 1024)    = 0
+110201 close(4<pipe:[4014953]>)         = 0
+110204 <... read resumed>, "", 4096)    = 0
+110201 wait4(110204 <unfinished ...>
+110204 close(3</home/nikallow/Code/1-mai/3-os/laba2/res.txt>) = 0
+110204 exit_group(0)                    = ?
+110204 +++ exited with 0 +++
+110201 <... wait4 resumed>, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 110204
+\end{terminal}
+
+На строке 112 родитель получает EOF из терминала: \texttt{read} возвращает 0. На строке 113 он закрывает конец канала для записи. Ребёнок ранее закрыл свою копию этого конца, поэтому открытых дескрипторов записи больше нет. После чтения всех данных ребёнок тоже получает EOF: на строке 114 его \texttt{read} возвращает 0.
+
+Родитель ждёт ребёнка через \texttt{waitpid}, который отображается как \texttt{wait4}. Ребёнок закрывает файл и завершает работу с кодом 0. На строке 119 родитель получает его статус: \texttt{WIFEXITED(s)} подтверждает обычное завершение, \texttt{WEXITSTATUS(s) == 0} подтверждает успешный код возврата.
+
+На строке 120 родителю доставляется \texttt{SIGCHLD}. Затем он выводит статус ребёнка и также завершается с кодом 0, что видно на строках 121--123.
+
+\section{Выводы}
+Сделаны две программы, которые передают строки через pipe и записывают суммы в файл. В решении использованы создание процесса, замена его программы, перенаправление стандартного ввода и ожидание завершения ребёнка. Обработаны ошибки системных вызовов, некорректных числа и переполнения суммы. Закрытие лишних концов канала позволяет передать EOF, а \texttt{waitpid} позволяет получить статус дочернего процесса.
+
+\section{Источники}
+\begin{enumerate}
+\item \href{https://man7.org/linux/man-pages/man7/pipe.7.html}{Linux man-pages: pipe(7)}
+\item \href{https://man7.org/linux/man-pages/man2/fork.2.html}{Linux man-pages: fork(2)}
+\item \href{https://man7.org/linux/man-pages/man2/dup.2.html}{Linux man-pages: dup(2), dup2(2)}
+\item \href{https://man7.org/linux/man-pages/man3/exec.3.html}{Linux man-pages: exec(3), execl(3)}
+\item \href{https://man7.org/linux/man-pages/man2/wait.2.html}{Linux man-pages: wait(2), waitpid(2)}
+\item \href{https://man7.org/linux/man-pages/man2/write.2.html}{Linux man-pages: write(2)}
+\end{enumerate}
+
+\appendixsection{А}{Исходный код программы и сборка}
+\begin{listingblock}{Файл src/parent.c}
+\inputcode{../src/parent.c}
+\end{listingblock}
+\begin{listingblock}{Файл src/child.c}
+\inputcode{../src/child.c}
+\end{listingblock}
+\begin{listingblock}{Файл src/CMakeLists.txt}
+\inputcode{../src/CMakeLists.txt}
+\end{listingblock}
+\begin{listingblock}{Файл report/Dockerfile}
+\inputcode{Dockerfile}
+\end{listingblock}
+\begin{listingblock}{Файл report/Makefile}
+\inputcode{Makefile}
+\end{listingblock}
+
+\appendixsection{Б}{Полный вывод strace}
+\begin{listingblock}{Трассировка parent и child}
+\inputterminal[numbers=left,numbersep=6pt,fontsize=\scriptsize]{inc/strace.txt}
+\end{listingblock}
+
+\end{document}

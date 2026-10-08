@@ -1,0 +1,108 @@
+% ============================================================
+%  Оформление отчёта. Обычно здесь ничего менять не нужно.
+%  Собирается pdfLaTeX (по умолчанию, в т. ч. в Overleaf),
+%  XeLaTeX или LuaLaTeX.
+% ============================================================
+
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T2A]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{tempora}                 % Times-подобный шрифт с кириллицей
+\else
+  \usepackage{fontspec}
+  \IfFontExistsTF{Times New Roman}
+    {\setmainfont{Times New Roman}}
+    {\IfFontExistsTF{CMU Serif}
+      {\setmainfont{CMU Serif}}
+      {\IfFontExistsTF{Liberation Serif}
+        {\setmainfont{Liberation Serif}}
+        {\setmainfont{DejaVu Serif}[AutoFakeSlant=0.2]}}}
+  \IfFontExistsTF{Consolas}
+    {\setmonofont{Consolas}[Scale=MatchLowercase]}
+    {\IfFontExistsTF{Courier New}
+      {\setmonofont{Courier New}}
+      {\IfFontExistsTF{CMU Typewriter Text}
+        {\setmonofont{CMU Typewriter Text}}
+        {\setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]}}}
+\fi
+\IfFileExists{russianb.ldf}
+  {\usepackage[english,russian]{babel}}
+  {\usepackage[english]{babel}\babelprovide[import,main]{russian}}
+
+% --- Поля и абзацы (как в исходном doc-шаблоне курса) ---
+\usepackage[a4paper, margin=2.54cm]{geometry}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 1pt}
+\frenchspacing
+% Запас для переноса текста при сборке без русских шаблонов переносов.
+\setlength{\emergencystretch}{0.5\linewidth}
+
+% --- Заголовки разделов без номеров ---
+\usepackage{titlesec}
+\setcounter{secnumdepth}{0}
+\titleformat{\section}{\large\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0pt}{}
+\titlespacing*{\section}{0pt}{14pt plus 4pt minus 2pt}{4pt plus 2pt}
+\titlespacing*{\subsection}{0pt}{10pt plus 2pt minus 2pt}{3pt plus 1pt}
+
+% --- Таблицы, рисунки, подписи ---
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{caption}
+\DeclareCaptionLabelSeparator{spacedendash}{~-- }
+\captionsetup{labelsep=spacedendash, font=small, singlelinecheck=false, justification=raggedright}
+\captionsetup[figure]{justification=centering, singlelinecheck=true}
+\captionsetup[table]{position=top, skip=4pt}
+\DeclareCaptionType[fileext=lol]{listing}[Листинг][Листинги]
+\captionsetup[listing]{position=top, skip=4pt, hypcap=false}
+\addto\captionsrussian{%
+  \renewcommand{\figurename}{Рисунок}%
+  \renewcommand{\tablename}{Таблица}%
+}
+\newcommand{\thead}[1]{\multicolumn{1}{|c|}{\cellcolor{gray!20}\textbf{#1}}}
+% Колонки таблиц без растягивания пробелов: L – резиновая, P{ширина} – фиксированная
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+% --- Код и вывод терминала ---
+% code     – фрагмент исходного кода;
+% terminal – вывод программы, strace и т. п.;
+% \inputterminal{файл} / \inputcode{файл} – то же, но из файла.
+\usepackage{needspace}
+\usepackage{fvextra}
+\fvset{breaklines=true, breakanywhere=true,
+       frame=leftline, framerule=1.5pt, framesep=6pt,
+       rulecolor=\color{gray!60}, xleftmargin=4pt}
+\DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small}
+\DefineVerbatimEnvironment{terminal}{Verbatim}{fontsize=\footnotesize}
+\newcommand{\inputcode}[2][]{\VerbatimInput[fontsize=\small,#1]{#2}}
+\newcommand{\inputterminal}[2][]{\VerbatimInput[fontsize=\footnotesize,#1]{#2}}
+% Листинг с подписью сверху:
+%   \begin{listingblock}{Подпись} \begin{code}...\end{code} \end{listingblock}
+\newenvironment{listingblock}[1]
+  {\par\medskip\Needspace{5\baselineskip}\captionof{listing}{#1}\nopagebreak}
+  {\par}
+
+% Приложение: с новой страницы, заголовок «Приложение А. ...»,
+% листинги внутри нумеруются А.1, А.2, ...
+\newcounter{appendixno}
+\newcommand{\appendixsection}[2]{%
+  \clearpage
+  \section{Приложение #1. #2}%
+  \stepcounter{appendixno}%
+  \setcounter{listing}{0}%
+  \renewcommand{\thelisting}{#1.\arabic{listing}}%
+  \renewcommand{\theHlisting}{app\arabic{appendixno}.\arabic{listing}}}
+
+% --- Ссылки ---
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+% --- Подсказки шаблона: серый курсив, удалить перед сдачей ---
+\newcommand{\hint}[1]{\leavevmode{\color{gray}\itshape #1}}
+% Рамка-заглушка вместо рисунка
+\newcommand{\placeholder}[2][4.5cm]{%
+  \fbox{\parbox[c][#1][c]{0.95\linewidth}{\centering\hint{#2}}}}

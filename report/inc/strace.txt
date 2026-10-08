@@ -1,0 +1,123 @@
+110201 execve("./build/parent", ["./build/parent"], 0x7ffec3035d50 /* 87 vars */) = 0
+110201 brk(NULL)                        = 0x1e616000
+110201 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+110201 openat(AT_FDCWD</home/nikallow/Code/1-mai/3-os/laba2>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+110201 fstat(3</etc/ld.so.cache>, {st_mode=S_IFREG|0644, st_size=85211, ...}) = 0
+110201 mmap(NULL, 85211, PROT_READ, MAP_PRIVATE, 3</etc/ld.so.cache>, 0) = 0x7f9d26a23000
+110201 close(3</etc/ld.so.cache>)       = 0
+110201 openat(AT_FDCWD</home/nikallow/Code/1-mai/3-os/laba2>, "/lib64/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib64/libc.so.6>
+110201 read(3</usr/lib64/libc.so.6>, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\2408\0\0\0\0\0\0@\0\0\0\0\0\0\0\260\316%\0\0\0\0\0\0\0\0\0@\08\0\16\0@\0D\0C\0\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0\20\3\0\0\0\0\0\0\20\3\0\0\0\0\0\0\10\0\0\0\0\0\0\0\3\0\0\0\4\0\0\0`\360\33\0\0\0\0\0`\360\33\0\0\0\0\0`\360\33\0\0\0\0\0\34\0\0\0\0\0\0\0\34\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0-\36\27\0\0\0\0\0-\36\27\0\0\0\0\0\0\20\0\0\0\0\0\0\1\0\0\0\4\0\0\0\0 \27\0\0\0\0\0\0 \27\0\0\0\0\0"..., 832) = 832
+110201 pread64(3</usr/lib64/libc.so.6>, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0\20\3\0\0\0\0\0\0\20\3\0\0\0\0\0\0\10\0\0\0\0\0\0\0\3\0\0\0\4\0\0\0`\360\33\0\0\0\0\0`\360\33\0\0\0\0\0`\360\33\0\0\0\0\0\34\0\0\0\0\0\0\0\34\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0-\36\27\0\0\0\0\0-\36\27\0\0\0\0\0\0\20\0\0\0\0\0\0\1\0\0\0\4\0\0\0\0 \27\0\0\0\0\0\0 \27\0\0\0\0\0\0 \27\0\0\0\0\0P\216\7\0\0\0\0\0P\216\7\0\0\0\0\0\0\20\0\0\0\0\0\0\1\0\0\0\6\0\0\0x\273\36\0\0\0\0\0x\273\36\0\0\0\0\0x\273\36\0\0\0\0\0"..., 784, 64) = 784
+110201 fstat(3</usr/lib64/libc.so.6>, {st_mode=S_IFREG|0755, st_size=2482096, ...}) = 0
+110201 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f9d26a21000
+110201 pread64(3</usr/lib64/libc.so.6>, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0\20\3\0\0\0\0\0\0\20\3\0\0\0\0\0\0\10\0\0\0\0\0\0\0\3\0\0\0\4\0\0\0`\360\33\0\0\0\0\0`\360\33\0\0\0\0\0`\360\33\0\0\0\0\0\34\0\0\0\0\0\0\0\34\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0-\36\27\0\0\0\0\0-\36\27\0\0\0\0\0\0\20\0\0\0\0\0\0\1\0\0\0\4\0\0\0\0 \27\0\0\0\0\0\0 \27\0\0\0\0\0\0 \27\0\0\0\0\0P\216\7\0\0\0\0\0P\216\7\0\0\0\0\0\0\20\0\0\0\0\0\0\1\0\0\0\6\0\0\0x\273\36\0\0\0\0\0x\273\36\0\0\0\0\0x\273\36\0\0\0\0\0"..., 784, 64) = 784
+110201 mmap(NULL, 2067312, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3</usr/lib64/libc.so.6>, 0) = 0x7f9d26828000
+110201 mmap(0x7f9d2699a000, 495616, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib64/libc.so.6>, 0x172000) = 0x7f9d2699a000
+110201 mmap(0x7f9d26a13000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib64/libc.so.6>, 0x1eb000) = 0x7f9d26a13000
+110201 mmap(0x7f9d26a19000, 31600, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f9d26a19000
+110201 close(3</usr/lib64/libc.so.6>)   = 0
+110201 mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f9d26825000
+110201 arch_prctl(ARCH_SET_FS, 0x7f9d26825740) = 0
+110201 set_tid_address(0x7f9d26825d68)  = 110201
+110201 set_robust_list(0x7f9d26825a20, 24) = 0
+110201 rseq({cpu_id_start=0, cpu_id=RSEQ_CPU_ID_UNINITIALIZED, rseq_cs=NULL, flags=0, node_id=0, mm_cid=0, slice_ctrl={request=0, granted=0, __reserved=0}, __reserved=0}, 33, 0, 0x53053053) = 0
+110201 mprotect(0x7f9d26a13000, 16384, PROT_READ) = 0
+110201 mprotect(0x402000, 4096, PROT_READ) = 0
+110201 mprotect(0x7f9d26a77000, 8192, PROT_READ) = 0
+110201 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+110201 getrandom("\xef\xfd\xba\x92\xf8\x9f\x58\x52", 8, GRND_NONBLOCK) = 8
+110201 munmap(0x7f9d26a23000, 85211)    = 0
+110201 brk(NULL)                        = 0x1e616000
+110201 brk(0x1e637000)                  = 0x1e637000
+110201 fstat(0</dev/pts/1<char 136:1>>, {st_mode=S_IFCHR|0600, st_rdev=makedev(0x88, 0x1), ...}) = 0
+110201 read(0</dev/pts/1<char 136:1>>, "res.txt\n", 1024) = 8
+110201 pipe2([3<pipe:[4014953]>, 4<pipe:[4014953]>], 0) = 0
+110201 rt_sigprocmask(SIG_BLOCK, ~[], [], 8) = 0
+110201 clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f9d26825a10) = 110204
+110204 set_robust_list(0x7f9d26825a20, 24 <unfinished ...>
+110201 rt_sigprocmask(SIG_SETMASK, [] <unfinished ...>
+110204 <... set_robust_list resumed>)   = 0
+110201 <... rt_sigprocmask resumed>, NULL, 8) = 0
+110204 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+110201 close(3<pipe:[4014953]> <unfinished ...>
+110204 close(4<pipe:[4014953]> <unfinished ...>
+110201 <... close resumed>)             = 0
+110204 <... close resumed>)             = 0
+110201 rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[], sa_flags=SA_RESTORER|SA_INTERRUPT|SA_NODEFER|SA_RESETHAND, sa_restorer=0x7f9d26841fb0} <unfinished ...>
+110204 dup2(3<pipe:[4014953]>, 0</dev/pts/1<char 136:1>> <unfinished ...>
+110201 <... rt_sigaction resumed>, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+110204 <... dup2 resumed>)              = 0<pipe:[4014953]>
+110201 getpid( <unfinished ...>
+110204 close(3<pipe:[4014953]> <unfinished ...>
+110201 <... getpid resumed>)            = 110201
+110204 <... close resumed>)             = 0
+110204 execve("/home/nikallow/Code/1-mai/3-os/laba2/build/child", ["child", "res.txt"], 0x7fff1911f118 /* 87 vars */ <unfinished ...>
+110201 write(2</dev/pts/1<char 136:1>>, "parent PID: 110201, child PID: 110204\n", 38) = 38
+110201 read(0</dev/pts/1<char 136:1>> <unfinished ...>
+110204 <... execve resumed>)            = 0
+110204 brk(NULL)                        = 0x19e99000
+110204 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+110204 openat(AT_FDCWD</home/nikallow/Code/1-mai/3-os/laba2>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+110204 fstat(3</etc/ld.so.cache>, {st_mode=S_IFREG|0644, st_size=85211, ...}) = 0
+110204 mmap(NULL, 85211, PROT_READ, MAP_PRIVATE, 3</etc/ld.so.cache>, 0) = 0x7f2edef0e000
+110204 close(3</etc/ld.so.cache>)       = 0
+110204 openat(AT_FDCWD</home/nikallow/Code/1-mai/3-os/laba2>, "/lib64/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib64/libc.so.6>
+110204 read(3</usr/lib64/libc.so.6>, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\2408\0\0\0\0\0\0@\0\0\0\0\0\0\0\260\316%\0\0\0\0\0\0\0\0\0@\08\0\16\0@\0D\0C\0\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0\20\3\0\0\0\0\0\0\20\3\0\0\0\0\0\0\10\0\0\0\0\0\0\0\3\0\0\0\4\0\0\0`\360\33\0\0\0\0\0`\360\33\0\0\0\0\0`\360\33\0\0\0\0\0\34\0\0\0\0\0\0\0\34\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0-\36\27\0\0\0\0\0-\36\27\0\0\0\0\0\0\20\0\0\0\0\0\0\1\0\0\0\4\0\0\0\0 \27\0\0\0\0\0\0 \27\0\0\0\0\0"..., 832) = 832
+110204 pread64(3</usr/lib64/libc.so.6>, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0\20\3\0\0\0\0\0\0\20\3\0\0\0\0\0\0\10\0\0\0\0\0\0\0\3\0\0\0\4\0\0\0`\360\33\0\0\0\0\0`\360\33\0\0\0\0\0`\360\33\0\0\0\0\0\34\0\0\0\0\0\0\0\34\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0-\36\27\0\0\0\0\0-\36\27\0\0\0\0\0\0\20\0\0\0\0\0\0\1\0\0\0\4\0\0\0\0 \27\0\0\0\0\0\0 \27\0\0\0\0\0\0 \27\0\0\0\0\0P\216\7\0\0\0\0\0P\216\7\0\0\0\0\0\0\20\0\0\0\0\0\0\1\0\0\0\6\0\0\0x\273\36\0\0\0\0\0x\273\36\0\0\0\0\0x\273\36\0\0\0\0\0"..., 784, 64) = 784
+110204 fstat(3</usr/lib64/libc.so.6>, {st_mode=S_IFREG|0755, st_size=2482096, ...}) = 0
+110204 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f2edef0c000
+110204 pread64(3</usr/lib64/libc.so.6>, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0\20\3\0\0\0\0\0\0\20\3\0\0\0\0\0\0\10\0\0\0\0\0\0\0\3\0\0\0\4\0\0\0`\360\33\0\0\0\0\0`\360\33\0\0\0\0\0`\360\33\0\0\0\0\0\34\0\0\0\0\0\0\0\34\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0\1\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0-\36\27\0\0\0\0\0-\36\27\0\0\0\0\0\0\20\0\0\0\0\0\0\1\0\0\0\4\0\0\0\0 \27\0\0\0\0\0\0 \27\0\0\0\0\0\0 \27\0\0\0\0\0P\216\7\0\0\0\0\0P\216\7\0\0\0\0\0\0\20\0\0\0\0\0\0\1\0\0\0\6\0\0\0x\273\36\0\0\0\0\0x\273\36\0\0\0\0\0x\273\36\0\0\0\0\0"..., 784, 64) = 784
+110204 mmap(NULL, 2067312, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3</usr/lib64/libc.so.6>, 0) = 0x7f2eded13000
+110204 mmap(0x7f2edee85000, 495616, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib64/libc.so.6>, 0x172000) = 0x7f2edee85000
+110204 mmap(0x7f2edeefe000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3</usr/lib64/libc.so.6>, 0x1eb000) = 0x7f2edeefe000
+110204 mmap(0x7f2edef04000, 31600, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f2edef04000
+110204 close(3</usr/lib64/libc.so.6>)   = 0
+110204 mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f2eded10000
+110204 arch_prctl(ARCH_SET_FS, 0x7f2eded10740) = 0
+110204 set_tid_address(0x7f2eded10d68)  = 110204
+110204 set_robust_list(0x7f2eded10a20, 24) = 0
+110204 rseq({cpu_id_start=0, cpu_id=RSEQ_CPU_ID_UNINITIALIZED, rseq_cs=NULL, flags=0, node_id=0, mm_cid=0, slice_ctrl={request=0, granted=0, __reserved=0}, __reserved=0}, 33, 0, 0x53053053) = 0
+110204 mprotect(0x7f2edeefe000, 16384, PROT_READ) = 0
+110204 mprotect(0x402000, 4096, PROT_READ) = 0
+110204 mprotect(0x7f2edef62000, 8192, PROT_READ) = 0
+110204 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+110204 getrandom("\x35\x21\x05\x67\xf6\x8a\x32\x97", 8, GRND_NONBLOCK) = 8
+110204 munmap(0x7f2edef0e000, 85211)    = 0
+110204 openat(AT_FDCWD</home/nikallow/Code/1-mai/3-os/laba2>, "res.txt", O_WRONLY|O_CREAT|O_TRUNC, 0644) = 3</home/nikallow/Code/1-mai/3-os/laba2/res.txt>
+110204 getppid()                        = 110201
+110204 getpid()                         = 110204
+110204 write(2</dev/pts/1<char 136:1>>, "child PID: 110204, parent PID: 110201\n", 38) = 38
+110204 brk(NULL)                        = 0x19e99000
+110204 brk(0x19eba000)                  = 0x19eba000
+110204 fstat(0<pipe:[4014953]>, {st_mode=S_IFIFO|0600, st_size=0, ...}) = 0
+110204 read(0<pipe:[4014953]> <unfinished ...>
+110201 <... read resumed>, "1 2 3\n", 1024) = 6
+110201 write(4<pipe:[4014953]>, "1 2 3\n", 6) = 6
+110204 <... read resumed>, "1 2 3\n", 4096) = 6
+110201 read(0</dev/pts/1<char 136:1>> <unfinished ...>
+110204 write(3</home/nikallow/Code/1-mai/3-os/laba2/res.txt>, "6\n", 2) = 2
+110204 read(0<pipe:[4014953]> <unfinished ...>
+110201 <... read resumed>, "3 4\n", 1024) = 4
+110201 write(4<pipe:[4014953]>, "3 4\n", 4) = 4
+110204 <... read resumed>, "3 4\n", 4096) = 4
+110201 read(0</dev/pts/1<char 136:1>> <unfinished ...>
+110204 write(3</home/nikallow/Code/1-mai/3-os/laba2/res.txt>, "7\n", 2) = 2
+110204 read(0<pipe:[4014953]> <unfinished ...>
+110201 <... read resumed>, "5\n", 1024) = 2
+110201 write(4<pipe:[4014953]>, "5\n", 2) = 2
+110204 <... read resumed>, "5\n", 4096) = 2
+110201 read(0</dev/pts/1<char 136:1>> <unfinished ...>
+110204 write(3</home/nikallow/Code/1-mai/3-os/laba2/res.txt>, "5\n", 2) = 2
+110204 read(0<pipe:[4014953]> <unfinished ...>
+110201 <... read resumed>, "", 1024)    = 0
+110201 close(4<pipe:[4014953]>)         = 0
+110204 <... read resumed>, "", 4096)    = 0
+110201 wait4(110204 <unfinished ...>
+110204 close(3</home/nikallow/Code/1-mai/3-os/laba2/res.txt>) = 0
+110204 exit_group(0)                    = ?
+110204 +++ exited with 0 +++
+110201 <... wait4 resumed>, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 110204
+110201 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=110204, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+110201 write(2</dev/pts/1<char 136:1>>, "child exited with status: 0\n", 28) = 28
+110201 exit_group(0)                    = ?
+110201 +++ exited with 0 +++
